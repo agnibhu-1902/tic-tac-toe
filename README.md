@@ -10,7 +10,7 @@ This is a recreation of the classic game we all know and love. The computer oppo
 Vanessa's AI will alternate between brain.cpp and randomize.cpp in a 4:1 ratio in order to make the game atmosphere more lively.
 
 ### How to compile?
-> Make sure 'gcc' and 'make' are installed.
+> Make sure 'g++' and 'make' are installed.
 ```
 make tic-tac-toe
 ```

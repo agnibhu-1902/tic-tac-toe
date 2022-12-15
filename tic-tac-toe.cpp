@@ -5,10 +5,9 @@
 #endif
 #include "board.h"
 #include <ctime>
-#include <cstdio>
 #include <cctype>
 #include <chrono>
-#include <thread>
+#include <limits>
 
 void intro();
 void quit();
@@ -16,10 +15,10 @@ void quit();
 int main(void)
 {
     intro();
-    string name;
+    string name, opponent = "Vanessa";
     cout << "\n\nHello, what is your name?\n";
     cin >> name;
-    cout << "\nHi " << name << "! I am Vanessa, your computer opponent. I hope you will enjoy playing with me. :D\n";
+    cout << "\nHi " << name << "! I am " << opponent << ", your computer opponent. I hope you will enjoy playing with me. :D\n";
     cout << "\n***** PRESS ANY KEY *****";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
@@ -27,6 +26,7 @@ int main(void)
     const int MAX_TIME = 10, MIN_TIME = 3; char choice; bool flag;
     do
     {
+        auto start = chrono::steady_clock::now();
         flag = false;
         cout << "\nOK, let's begin!\n";
         cout << "\nFirst, you need to choose your piece.\n";
@@ -53,13 +53,13 @@ int main(void)
         while (!board.tied())
         {
             cout << "\n\n" << name << "'s turn:\n";
-            cout << "\nWhere do you want to place your piece? [1-9]: ";
             int pos, row, col;
             do
             {
+                cout << "\nWhere do you want to place your piece? [1-9]: ";
                 cin >> pos;
                 if (pos < 1 || pos > 9)
-                    cout << "Invalid position. Try again!";
+                    cout << "Invalid position. Please enter a number within 1 and 9.";
                 row = (pos - 1) / 3; col = (pos - 1) % 3;
                 if (board.filled(row, col))
                     cout << pos << " is already taken. Try again!";
@@ -71,11 +71,17 @@ int main(void)
             {
                 flag = true;
                 cout << "\n\n" << name << " wins!\n";
+                auto end = chrono::steady_clock::now();
+                auto elapsed = chrono::duration_cast<chrono::seconds>(end - start).count();
+                cout << "Elapsed time: " << elapsed << " seconds\n";
+                int imax = std::numeric_limits<int>::max();
+                cout << "Your score: " << imax / elapsed << "\n";
                 break;
             }
             if (board.tied())
                 break;
-            cout << "\n\nVanessa is thinking";
+            cout << "\n\n" << opponent << "'s turn:";
+            cout << "\n\n" << opponent << " is thinking";
             int time = rand() % (MAX_TIME - MIN_TIME + 1) + MIN_TIME;
             for (int i = 0; i < time; i++)
             {
@@ -84,7 +90,7 @@ int main(void)
                 cout << ".";
             }
             cout << "\n";
-            bool brain = rand() % 2, computer_status;
+            bool brain = rand() % 3, computer_status;
             if (brain)
                 computer_status = board.brain();
             else
@@ -93,7 +99,11 @@ int main(void)
             if (computer_status)
             {
                 flag = true;
-                cout << "\n\nVanessa wins!\n";
+                cout << "\n\n" << opponent << " wins!\n";
+                cout << "Better luck next time!\n";
+                auto end = chrono::steady_clock::now();
+                auto elapsed = chrono::duration_cast<chrono::seconds>(end - start).count();
+                cout << "Elapsed time: " << elapsed << " seconds\n";
                 break;
             }
         }
@@ -101,6 +111,9 @@ int main(void)
         {
             cout << "\n\nMatch tied!\n";
             cout << "Nobody wins.\n";
+            auto end = chrono::steady_clock::now();
+            auto elapsed = chrono::duration_cast<chrono::seconds>(end - start).count();
+            cout << "Elapsed time: " << elapsed << " seconds\n";
         }
         cout << "\nDo you want to play again? [Y/N]: ";
         do

@@ -1,4 +1,5 @@
 #include "board.h"
+#include <ctime>
 bool _MATCH = false;
 bool Board:: brain()
 {
@@ -35,6 +36,22 @@ bool Board:: brain()
                 }
         infiltrate_player = true;
     }
+    srand(time(0));
+    bool choose_corner = rand() % 3;
+    if (choose_corner)
+        for (int i = 0, j = 2; i < 3; i += 2, j -= 2)
+        {
+            if (!filled(i, i))
+            {
+                board[i][i] = computer;
+                return match(i, i, false);
+            }
+            if (!filled(i, j))
+            {
+                board[i][j] = computer;
+                return match(i, j, false);
+            }
+        }
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
             if (board[i][j] == computer)

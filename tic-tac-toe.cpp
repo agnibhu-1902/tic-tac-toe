@@ -47,44 +47,53 @@ int main(void)
         cout << "\nLet's play!\n";
         cout << "\n***** PRESS ENTER *****";
         cin.get();
+        bool start_player = rand() % 2;
+        if (start_player) // Choose who will start the game
+            cout << "\n\n" << name << " will start the game.\n";
+        else
+            cout << "\n\n" << opponent << " will start the game.\n";
         while (!board.tied())
         {
-            cout << "\n\n" << name << "'s turn:\n";
-            int pos, row, col;
-            do
+            if (start_player)
             {
-                cout << "\nWhere do you want to place your piece? [1-9]: ";
-                while (!(cin >> pos))
+                cout << "\n\n" << name << "'s turn:\n";
+                int pos, row, col;
+                do
                 {
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(),'\n');
-                    cout << "\nPlease enter proper numeric value: ";
+                    cout << "\nWhere do you want to place your piece? [1-9]: ";
+                    while (!(cin >> pos))
+                    {
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                        cout << "\nPlease enter proper numeric value: ";
+                    }
+                    if (pos < 1 || pos > 9)
+                    {
+                        cout << "Invalid position. Please enter a number within 1 and 9.\n";
+                        continue;
+                    }
+                    row = (pos - 1) / 3; col = (pos - 1) % 3;
+                    if (board.filled(row, col))
+                        cout << pos << " is already taken. Try again!\n";
                 }
-                if (pos < 1 || pos > 9)
+                while ((pos < 1 || pos > 9) || board.filled(row, col));
+                board.place(row, col, true);
+                board.draw();
+                if (board.match(row, col, true))
                 {
-                    cout << "Invalid position. Please enter a number within 1 and 9.\n";
-                    continue;
+                    flag = true;
+                    cout << "\n\n" << name << " wins!\n";
+                    auto end = chrono::steady_clock::now(); // End the timer
+                    auto elapsed = chrono::duration_cast<chrono::seconds>(end - start).count(); // Get the elapsed time
+                    cout << "Elapsed time: " << elapsed << " seconds\n";
+                    int imax = std::numeric_limits<int>::max();
+                    cout << "Your score: " << imax / elapsed << "\n"; // Display the score
+                    break;
                 }
-                row = (pos - 1) / 3; col = (pos - 1) % 3;
-                if (board.filled(row, col))
-                    cout << pos << " is already taken. Try again!\n";
+                if (board.tied())
+                    break;
             }
-            while ((pos < 1 || pos > 9) || board.filled(row, col));
-            board.place(row, col, true);
-            board.draw();
-            if (board.match(row, col, true))
-            {
-                flag = true;
-                cout << "\n\n" << name << " wins!\n";
-                auto end = chrono::steady_clock::now(); // End the timer
-                auto elapsed = chrono::duration_cast<chrono::seconds>(end - start).count(); // Get the elapsed time
-                cout << "Elapsed time: " << elapsed << " seconds\n";
-                int imax = std::numeric_limits<int>::max();
-                cout << "Your score: " << imax / elapsed << "\n"; // Display the score
-                break;
-            }
-            if (board.tied())
-                break;
+            start_player = true;
             cout << "\n\n" << opponent << "'s turn:";
             cout << "\n\n" << opponent << " is thinking";
             int time = rand() % (MAX_TIME - MIN_TIME + 1) + MIN_TIME;

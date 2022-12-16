@@ -37,8 +37,14 @@ bool Board:: brain()
         infiltrate_player = true;
     }
     srand(time(0));
-    bool choose_corner = rand() % 3;
+    bool choose_corner = rand() % 2;
     if (choose_corner)
+    {
+        if (!filled(1, 1))
+        {
+            board[1][1] = computer;
+            return match(1, 1, false);
+        }
         for (int i = 0, j = 2; i < 3; i += 2, j -= 2)
         {
             if (!filled(i, i))
@@ -52,6 +58,7 @@ bool Board:: brain()
                 return match(i, j, false);
             }
         }
+    }
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
             if (board[i][j] == computer)

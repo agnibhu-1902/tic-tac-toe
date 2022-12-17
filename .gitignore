@@ -27,6 +27,7 @@
 *.lib
 
 # Executables
+tic-tac-toe
 *.exe
 *.out
 *.app

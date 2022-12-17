@@ -33,12 +33,13 @@ int main(void)
             cin >> piece;
             piece = toupper(piece);
             if (piece != 'X' && piece != 'O')
-                cout << "\nPlease type 'X' or 'O': ";
+                cout << "Please type 'X' or 'O': ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         while (piece != 'X' && piece != 'O');
         cout << "\nGood! You now have the '" << piece << "'.\n";
         cout << "\n***** PRESS ENTER *****";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cin.get();
         Board board(piece);
         cout << "\nNow you need to place your piece.\n";
@@ -63,10 +64,12 @@ int main(void)
                     cout << "\nWhere do you want to place your piece? [1-9]: ";
                     while (!(cin >> pos))
                     {
+                        cout << "Please enter a proper numeric value: ";
                         cin.clear();
                         cin.ignore(numeric_limits<streamsize>::max(),'\n');
-                        cout << "\nPlease enter proper numeric value: ";
                     }
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(),'\n');
                     if (pos < 1 || pos > 9)
                     {
                         cout << "Invalid position. Please enter a number within 1 and 9.\n";
@@ -132,11 +135,12 @@ int main(void)
         cout << "\nDo you want to play again? [Y/N]: ";
         do
         {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin >> choice;
             choice = toupper(choice);
             if (choice != 'Y' && choice != 'N')
-                cout << "\nPlease type 'Y' (yes) or 'N' (no): ";
+                cout << "Please type 'Y' (yes) or 'N' (no): ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         while (choice != 'Y' && choice != 'N');
     }
@@ -157,6 +161,5 @@ void quit()
 {
     cout << "\nGoodbye!";
     cout << "\n\n***** PRESS ENTER TO EXIT *****";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
 }

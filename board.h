@@ -17,10 +17,10 @@ private:
     bool put_vertical(int);
     bool put_l_diagonal();
     bool put_r_diagonal();
-    bool infiltrate_horizontal(int);
-    bool infiltrate_vertical(int);
-    bool infiltrate_l_diagonal();
-    bool infiltrate_r_diagonal();
+    bool infiltrate_horizontal(int, bool);
+    bool infiltrate_vertical(int, bool);
+    bool infiltrate_l_diagonal(bool);
+    bool infiltrate_r_diagonal(bool);
 public:
     Board(char);
     ~Board();

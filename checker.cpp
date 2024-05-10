@@ -35,7 +35,7 @@ bool Board:: r_diagonal_scan(bool player) const
 bool Board:: match(int row, int col, bool player) const
 {
     if (horizontal_scan(row, player))
-        {return true;}
+        return true;
     if (vertical_scan(col, player))
         return true;
     if (row == 1 && col == 1)

@@ -1,12 +1,8 @@
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
 #include "board.h"
 #include <ctime>
 #include <cctype>
 #include <chrono>
+#include <thread>
 #include <limits>
 
 void intro();
@@ -19,14 +15,14 @@ int main(void)
     cout << "\n\nHello, what is your name?\n";
     cin >> name;
     cout << "\nHi " << name << "! I am " << opponent << ", your computer opponent. I hope you will enjoy playing with me. :D\n";
-    cout << "\n***** PRESS ANY KEY *****";
+    cout << "\n***** PRESS ENTER *****";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
     srand(time(0));
     const int MAX_TIME = 10, MIN_TIME = 3; char choice; bool flag;
     do
     {
-        auto start = chrono::steady_clock::now();
+        auto start = chrono::steady_clock::now(); // Start the timer
         flag = false;
         cout << "\nOK, let's begin!\n";
         cout << "\nFirst, you need to choose your piece.\n";
@@ -37,59 +33,79 @@ int main(void)
             cin >> piece;
             piece = toupper(piece);
             if (piece != 'X' && piece != 'O')
-                cout << "\nPlease type 'X' or 'O': ";
+                cout << "Please type 'X' or 'O': ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         while (piece != 'X' && piece != 'O');
         cout << "\nGood! You now have the '" << piece << "'.\n";
-        cout << "\n***** PRESS ANY KEY *****";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "\n***** PRESS ENTER *****";
         cin.get();
         Board board(piece);
         cout << "\nNow you need to place your piece.\n";
         board.draw();
         cout << "\nThe board has markings from 1 to 9. You can place your piece anywhere.\n";
         cout << "\nLet's play!\n";
+        bool start_player = rand() % 2;
+        if (start_player) // Choose who will start the game
+            cout << "\n\n" << name << " will start the game.\n";
+        else
+            cout << "\n\n" << opponent << " will start the game.\n";
         while (!board.tied())
         {
-            cout << "\n\n" << name << "'s turn:\n";
-            int pos, row, col;
-            do
+            if (start_player)
             {
-                cout << "\nWhere do you want to place your piece? [1-9]: ";
-                cin >> pos;
-                if (pos < 1 || pos > 9)
-                    cout << "Invalid position. Please enter a number within 1 and 9.";
-                row = (pos - 1) / 3; col = (pos - 1) % 3;
-                if (board.filled(row, col))
-                    cout << pos << " is already taken. Try again!";
+                cout << "\n\n" << name << "'s turn:\n";
+                int pos, row, col;
+                do
+                {
+                    cout << "\nWhere do you want to place your piece? [1-9]: ";
+                    while (!(cin >> pos))
+                    {
+                        cout << "Please enter a proper numeric value: ";
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                    }
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                    if (pos < 1 || pos > 9)
+                    {
+                        cout << "Invalid position. Please enter a number within 1 and 9.\n";
+                        continue;
+                    }
+                    row = (pos - 1) / 3; col = (pos - 1) % 3;
+                    if (board.filled(row, col))
+                        cout << pos << " is already taken. Try again!\n";
+                }
+                while ((pos < 1 || pos > 9) || board.filled(row, col));
+                board.place(row, col, true);
+                board.draw();
+                if (board.match(row, col, true))
+                {
+                    flag = true;
+                    cout << "\n\n" << name << " wins!\n";
+                    auto end = chrono::steady_clock::now(); // End the timer
+                    auto elapsed = chrono::duration_cast<chrono::seconds>(end - start).count(); // Get the elapsed time
+                    cout << "Elapsed time: " << elapsed << " seconds\n";
+                    int imax = std::numeric_limits<int>::max();
+                    cout << "Your score: " << imax / elapsed << "\n"; // Display the score
+                    break;
+                }
+                if (board.tied())
+                    break;
             }
-            while ((pos < 1 || pos > 9) || board.filled(row, col));
-            board.place(row, col, true);
-            board.draw();
-            if (board.match(row, col, true))
-            {
-                flag = true;
-                cout << "\n\n" << name << " wins!\n";
-                auto end = chrono::steady_clock::now();
-                auto elapsed = chrono::duration_cast<chrono::seconds>(end - start).count();
-                cout << "Elapsed time: " << elapsed << " seconds\n";
-                int imax = std::numeric_limits<int>::max();
-                cout << "Your score: " << imax / elapsed << "\n";
-                break;
-            }
-            if (board.tied())
-                break;
+            start_player = true;
             cout << "\n\n" << opponent << "'s turn:";
             cout << "\n\n" << opponent << " is thinking";
             int time = rand() % (MAX_TIME - MIN_TIME + 1) + MIN_TIME;
             for (int i = 0; i < time; i++)
             {
                 cout.flush();
-                sleep(1);
+                this_thread::sleep_for(chrono::seconds(1)); // Sleep momentarily
                 cout << ".";
             }
             cout << "\n";
-            bool brain = rand() % 3, computer_status;
+            bool brain = rand() % 5, computer_status;
             if (brain)
                 computer_status = board.brain();
             else
@@ -117,11 +133,12 @@ int main(void)
         cout << "\nDo you want to play again? [Y/N]: ";
         do
         {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin >> choice;
             choice = toupper(choice);
             if (choice != 'Y' && choice != 'N')
-                cout << "\nPlease type 'Y' (yes) or 'N' (no): ";
+                cout << "Please type 'Y' (yes) or 'N' (no): ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         while (choice != 'Y' && choice != 'N');
     }
@@ -141,7 +158,6 @@ void intro()
 void quit()
 {
     cout << "\nGoodbye!";
-    cout << "\n\n***** PRESS ANY KEY TO EXIT *****";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << "\n\n***** PRESS ENTER TO EXIT *****";
     cin.get();
 }

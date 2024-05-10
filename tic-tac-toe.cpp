@@ -49,7 +49,6 @@ int main(void)
         board.draw();
         cout << "\nThe board has markings from 1 to 9. You can place your piece anywhere.\n";
         cout << "\nLet's play!\n";
-        cin.get();
         while (!board.tied())
         {
             cout << "\n\n" << name << "'s turn:\n";

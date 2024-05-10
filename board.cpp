@@ -20,6 +20,8 @@ void Board:: draw() const
         cout << "\n|";
         for (int j = 0; j < 3; j++)
             cout << "  " << board[i][j] << "  |";
+        if (i != 2)
+            cout << "\n - - - - - - - - -";
     }
     cout << "\n - - - - - - - - -";
 }

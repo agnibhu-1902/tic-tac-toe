@@ -1,5 +1,7 @@
 tic-tac-toe
+highscores.csv
 .DS_Store
+.vscode/
 
 # Prerequisites
 *.d

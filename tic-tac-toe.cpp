@@ -18,6 +18,7 @@ int main(void)
     intro();
     fstream fout;
     fout.open("highscores.csv", ios::out | ios::app);
+    if (!fout) cerr << "Cannot open 'highscores.csv'";
     string name, opponent; char player_mode;
     srand(time(0));
     const int MAX_TIME = 10, MIN_TIME = 3, MAX_SCORE = numeric_limits<int>::max() / 10000; char choice; bool flag;
@@ -191,9 +192,15 @@ void intro()
 void leaderboard()
 {
     ifstream fin("highscores.csv");
+    if (!fin) cerr << "Cannot open 'highscores.csv'";
     string line;
     cout << endl << "====================== LEADERBOARD ======================" << endl;
     cout << "NAME" << "\t\t\t\t\t" << "HIGH SCORE" << endl;
+    if (fin.peek() == std::ifstream::traits_type::eof())
+    {
+        cout << "                      - No Records -                       " << endl;
+        return;
+    }
     while (getline(fin, line))
     {
         istringstream iss(line); string word;

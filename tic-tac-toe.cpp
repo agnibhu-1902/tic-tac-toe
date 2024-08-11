@@ -134,7 +134,7 @@ int main(void)
                     cout << ".";
                 }
                 cout << "\n";
-                bool brain = rand() % 5, computer_status;
+                bool brain = rand() % 7, computer_status;
                 if (brain)
                     computer_status = board.brain();
                 else

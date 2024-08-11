@@ -6,6 +6,7 @@
 #include <limits>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 void intro();
 void quit();

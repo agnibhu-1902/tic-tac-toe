@@ -1,4 +1,5 @@
 #include "board.h"
+#include <limits>
 
 int* player(string name, Board &board, bool player) {
     cout << "\n\n" << name << "'s turn:\n";
